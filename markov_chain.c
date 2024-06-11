@@ -1,18 +1,14 @@
 #include "markov_chain.h"
 
-#define NINE_TEEN 19
-#define HUNDRED 101
-#define TWENY 20
-
-Node *add_to_database (MarkovChain *markov_chain, char *data_ptr)
+Node *add_to_database (MarkovChain *markov_chain, void *data_ptr)
 {
-  //printf("\n%s and ",data_ptr);
   // Traverse the linked list to see if data_ptr already exists in the database
   Node *current_node = markov_chain->database->first;
   while (current_node != NULL)
     {
       MarkovNode *current_markov_node = current_node->data;
-      if (strcmp (current_markov_node->data, data_ptr) == 0)
+      if (markov_chain->comp_func (current_markov_node->data, data_ptr)
+          == 0)
         {
           // data_ptr already exists in the database, so return its node
           return current_node;
@@ -29,7 +25,12 @@ Node *add_to_database (MarkovChain *markov_chain, char *data_ptr)
       return NULL;
     }
 
-  strcpy (new_markov_node->data, data_ptr);
+  new_markov_node->data = markov_chain->copy_func (data_ptr);
+  if (new_markov_node->data == NULL)
+    {
+      free (new_markov_node);
+      return NULL;
+    }
   new_markov_node->frequencies_list = NULL;
   new_markov_node->size_list = 0;
 
@@ -45,7 +46,7 @@ Node *add_to_database (MarkovChain *markov_chain, char *data_ptr)
   return markov_chain->database->last;
 }
 
-Node *get_node_from_database (MarkovChain *markov_chain, char *data_ptr)
+Node *get_node_from_database (MarkovChain *markov_chain, void *data_ptr)
 {
   if (markov_chain == NULL || data_ptr == NULL)
     {
@@ -56,7 +57,7 @@ Node *get_node_from_database (MarkovChain *markov_chain, char *data_ptr)
   Node *current_node = markov_chain->database->first;
   while (current_node != NULL)
     {
-      if (strcmp (current_node->data->data, data_ptr) == 0)
+      if (markov_chain->comp_func (current_node->data->data, data_ptr) == 0)
         {
           return current_node;
         }
@@ -65,10 +66,10 @@ Node *get_node_from_database (MarkovChain *markov_chain, char *data_ptr)
   return NULL;
 }
 
-bool
-add_node_to_frequencies_list (MarkovNode *first_node, MarkovNode *second_node)
+bool add_node_to_frequencies_list (MarkovNode *first_node, MarkovNode
+*second_node, MarkovChain *markov_chain)
 {
-  if (first_node == NULL || second_node == NULL)
+  if (markov_chain == NULL || first_node == NULL || second_node == NULL)
     {
       return false;
     }
@@ -83,13 +84,14 @@ add_node_to_frequencies_list (MarkovNode *first_node, MarkovNode *second_node)
       first_node->frequencies_list[0].markov_node = second_node;
       first_node->frequencies_list[0].frequency = 1;
       first_node->size_list = 1;
-      first_node->total_len=1;
+      first_node->total_len = 1;
       return true;
     }
   int size = first_node->size_list;
   for (int i = 0; i < size; i++)
     {
-      if (first_node->frequencies_list[i].markov_node == second_node)
+      if (markov_chain->comp_func (first_node->
+          frequencies_list[i].markov_node->data, second_node->data) == 0)
         {
           first_node->frequencies_list[i].frequency++;
           first_node->total_len++;
@@ -127,6 +129,7 @@ void free_database (MarkovChain **ptr_chain)
       database->first = current->next;
       MarkovNode *markov_node = current->data;
       free (markov_node->frequencies_list);
+      (*ptr_chain)->free_data (markov_node->data);
       markov_node->frequencies_list = NULL;
 
       free (markov_node);
@@ -152,7 +155,6 @@ MarkovNode *get_first_random_node (MarkovChain *markov_chain)
   Node *node = NULL;
   int size = 0;
   int rand = 0;
-  int len = 0;
 
   while (true)
     {
@@ -163,11 +165,11 @@ MarkovNode *get_first_random_node (MarkovChain *markov_chain)
         {
           node = node->next;
         }
-      len = strlen (node->data->data);
-      //printf("%s\n",node->data->data);
-      if (node->data->data[len - 1] != '.')
+
+      if (!markov_chain->is_last (node->data->data))
         {
           return node->data;
+          //return node->data;
         }
     }
 }
@@ -194,18 +196,14 @@ MarkovNode *get_next_random_node (MarkovNode *state_struct_ptr)
     }
 }
 
-void
-generate_tweet (MarkovChain *markov_chain, MarkovNode *first_node, int
+void generate_tweet (MarkovChain *markov_chain, MarkovNode *first_node, int
 max_length)
 {
 
-  char list_word[TWENY][HUNDRED];
   int i = 1;
-  int len = 0;
-  int count_num_words = 1;
+  int count_num_words = 0;
   MarkovNode *general = NULL;
 
-  i = 1;
   if (first_node == NULL)
     {
       general = get_first_random_node (markov_chain);
@@ -215,24 +213,19 @@ max_length)
       general = first_node;
     }
 
-  strcpy (list_word[0], general->data);
-  count_num_words = 1;
+  count_num_words++;
+  markov_chain->print_func (general->data);
   while (i != max_length)
     {
       general = get_next_random_node (general);
-      strcpy (list_word[i], general->data);
-      len = strlen (list_word[i]);
-      if ((list_word[i][len - 1] == '.'))
+      //list_word[i] = markov_chain->copy (general->data);
+      markov_chain->print_func (general->data);
+      if ((markov_chain->is_last (general->data)))
         {
-          i = NINE_TEEN;
+          i = max_length - 1;
         }
       i++;
       count_num_words++;
-    }
-
-  for (int j = 0; j < count_num_words; j++)
-    {
-      printf (" %s", list_word[j]);
     }
 
 }
