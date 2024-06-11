@@ -1,55 +1,36 @@
-# Markov Chain Text Generator
+# Markov-Chain-Text-Generator-and-snakes-and-ladders
+
 
 ## Overview
 
-This project involves creating a text generator based on Markov Chains, a fundamental concept in Natural Language Processing (NLP). The goal is to generate new sentences or "tweets" based on a given corpus of existing tweets.
+This project was developed as part of an exercise for a programming workshop. It involves implementing generic programming concepts in C and C++ to create a library for generating tweets and simulating a snakes and ladders game. The core component of the project is the implementation of a Markov chain for generating text.
 
+## Installation
 
-## Introduction
+To compile the project, you'll need a C compiler (such as GCC) and a C++ compiler (such as g++). 
 
-### Background
+## Usage
 
-Natural Language Processing (NLP) is a critical field in computer science, focusing on the interaction between computers and human languages. Common applications include virtual assistants like Google Assistant, Siri, and Alexa. In this project, we explore another aspect of NLP: generating new sentences based on an existing corpus using Markov Chains.
+### Tweet Generator
 
-### Markov Chains
+The tweet generator program reads a corpus of text and generates tweets using a Markov chain model.
 
-A Markov Chain is a statistical model that represents a sequence of possible events, where the probability of each event depends only on the state attained in the previous event. For text generation, each word in a sentence is a state, and the next word is chosen based on the probability distribution derived from the input corpus.
-
-## Project Structure
-
-The project consists of several stages:
-1. Learning Phase (Part A): Read the input corpus and build a data structure to store the words and their frequencies.
-2. Input Phase (Part B): Process the input file and populate the data structure.
-3. Output Phase (Part C): Generate new sentences based on the Markov Chain model.
-
-
-#### Generating Tweets
-
-Use the Markov Chain to generate new sentences by starting with a random word and following the chain based on the stored frequencies until a sentence-ending word is reached.
-
-
-## Compilation and Execution
-
-### Compilation
-
-To compile the project, use the provided makefile or the following command:
-
+#### Usage:
 ```bash
-gcc -o tweets_generator tweets_generator.c linked_list.c markov_chain.c
+./tweet_generator <corpus_file>
 ```
 
-### Execution
+### Snakes and Ladders Simulator
 
-Run the executable with the required parameters:
+The snakes and ladders simulator generates possible paths for a player to traverse on a snakes and ladders board.
 
+#### Usage:
 ```bash
-./tweets_generator <seed> <number_of_tweets> <path_to_corpus> [<words_to_read>]
+./snakes_and_ladders <seed> <number_of_paths>
 ```
 
-Example:
+## Markov Chain
 
-```bash
-./tweets_generator 454545 100 path-to-file/text_corpus.txt 30
-```
+The core component of the project is the implementation of a Markov chain, which is used in the tweet generator program. The Markov chain model analyzes a corpus of text and generates new text based on the probability of transitioning from one word to another.
 
 
