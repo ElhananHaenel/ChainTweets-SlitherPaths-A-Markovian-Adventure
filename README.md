@@ -2,15 +2,8 @@
 
 ## Overview
 
-This project involves creating a text generator based on Markov Chains, a fundamental concept in Natural Language Processing (NLP). The goal is to generate new sentences or "tweets" based on a given corpus of existing tweets. This README will guide you through the structure and functionality of the project, covering the background, implementation steps, and specific instructions for completing and testing your solution.
+This project involves creating a text generator based on Markov Chains, a fundamental concept in Natural Language Processing (NLP). The goal is to generate new sentences or "tweets" based on a given corpus of existing tweets.
 
-## Table of Contents
-1. Introduction
-2. Project Structure
-3. Implementation Details
-4. Compilation and Execution
-5. Example and Testing
-6. Submission Requirements
 
 ## Introduction
 
